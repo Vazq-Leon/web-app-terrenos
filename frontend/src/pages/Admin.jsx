@@ -139,8 +139,13 @@ export default function Admin() {
                     .desktop-table { display: none !important; }
                     .mobile-cards { display: block !important; }
                     .admin-container { padding: 10px 20px 40px !important; }
-                    .modal-content { width: 95% !important; padding: 20px !important; }
+                    .modal-content { width: 95% !important; padding: 20px !important; max-height: 95vh !important; }
                     .form-grid { grid-template-columns: 1fr !important; }
+                }
+                @media (max-width: 400px) {
+                    .admin-header h1 { font-size: 18px !important; }
+                    .modal-content { padding: 15px !important; }
+                    .admin-container { padding: 10px 10px 40px !important; }
                 }
                 .mobile-cards { display: none; }
             `}</style>
