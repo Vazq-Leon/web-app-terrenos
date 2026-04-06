@@ -132,9 +132,21 @@ export default function Admin() {
     // ── Render ────────────────────────────────────────────────────────────────
     return (
         <div style={{ minHeight: '100vh', backgroundColor: bg, color: textMain, fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+            <style>{`
+                @media (max-width: 768px) {
+                    .admin-header { flex-direction: column; align-items: flex-start !important; gap: 16px; padding: 20px !important; }
+                    .stats-container { flex-direction: column; padding: 10px 20px !important; }
+                    .desktop-table { display: none !important; }
+                    .mobile-cards { display: block !important; }
+                    .admin-container { padding: 10px 20px 40px !important; }
+                    .modal-content { width: 95% !important; padding: 20px !important; }
+                    .form-grid { grid-template-columns: 1fr !important; }
+                }
+                .mobile-cards { display: none; }
+            `}</style>
 
             {/* ── Header ── */}
-            <div style={{ borderBottom: `1px solid ${border}`, padding: '18px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: surface }}>
+            <div className="admin-header" style={{ borderBottom: `1px solid ${border}`, padding: '18px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: surface }}>
                 <div>
                     <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, letterSpacing: '0.5px' }}>
                         🏡 Panel de Control
@@ -147,7 +159,7 @@ export default function Admin() {
             </div>
 
             {/* ── Stats ── */}
-            <div style={{ display: 'flex', gap: '16px', padding: '24px 32px 8px' }}>
+            <div className="stats-container" style={{ display: 'flex', gap: '16px', padding: '24px 32px 8px' }}>
                 {[
                     { label: 'Total Terrenos', value: terrenos.length, color: accent },
                     { label: 'Con Fotos', value: terrenos.filter((t) => t.fotos?.length > 0).length, color: success },
@@ -160,9 +172,11 @@ export default function Admin() {
                 ))}
             </div>
 
-            {/* ── Table ── */}
-            <div style={{ padding: '16px 32px 40px' }}>
-                <div style={{ backgroundColor: surface, borderRadius: '14px', border: `1px solid ${border}`, overflow: 'hidden' }}>
+            {/* ── Content ── */}
+            <div className="admin-container" style={{ padding: '16px 32px 40px' }}>
+                
+                {/* Desktop Table */}
+                <div className="desktop-table" style={{ backgroundColor: surface, borderRadius: '14px', border: `1px solid ${border}`, overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ borderBottom: `1px solid ${border}` }}>
@@ -196,16 +210,36 @@ export default function Admin() {
                                     </td>
                                 </tr>
                             ))}
-                            {terrenos.length === 0 && (
-                                <tr>
-                                    <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: textMuted }}>
-                                        No hay terrenos. ¡Agrega el primero!
-                                    </td>
-                                </tr>
-                            )}
                         </tbody>
                     </table>
                 </div>
+
+                {/* Mobile Cards */}
+                <div className="mobile-cards">
+                    {terrenos.map((t) => (
+                        <div key={t.id} style={{ backgroundColor: surface, borderRadius: '12px', border: `1px solid ${border}`, padding: '20px', marginBottom: '16px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                                <h3 style={{ margin: 0, fontSize: '18px' }}>{t.nombre}</h3>
+                                <span style={{ color: success, fontWeight: 700 }}>${t.precio}</span>
+                            </div>
+                            <p style={{ margin: '0 0 16px', fontSize: '14px', color: textMuted }}>📍 {t.ubicacion}</p>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+                                <span style={badgeStyle(success)}>{t.fotos?.length || 0} fotos</span>
+                                <span style={badgeStyle('#f5a623')}>{t.videos?.length || 0} videos</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <button onClick={() => abrirEditar(t)} style={{ ...btnSmall(accent), flex: 1, padding: '10px' }}>Editar</button>
+                                <button onClick={() => setConfirmarEliminar(t.id)} style={{ ...btnSmall(danger), flex: 1, padding: '10px' }}>Eliminar</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {terrenos.length === 0 && (
+                    <div style={{ padding: '60px 20px', textAlign: 'center', backgroundColor: surface, borderRadius: '14px', border: `1px solid ${border}` }}>
+                        <p style={{ color: textMuted }}>No hay terrenos registrados. ¡Haz clic en el botón de arriba para agregar el primero!</p>
+                    </div>
+                )}
             </div>
 
             {/* ── Confirm Delete Modal ── */}
@@ -226,7 +260,7 @@ export default function Admin() {
             {/* ── Add / Edit Form Panel ── */}
             {showForm && (
                 <Overlay onClick={cerrarForm}>
-                    <div style={{ backgroundColor: surface, border: `1px solid ${border}`, borderRadius: '18px', padding: '32px', maxWidth: '640px', width: '95%', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-content" style={{ backgroundColor: surface, border: `1px solid ${border}`, borderRadius: '18px', padding: '32px', maxWidth: '640px', width: '95%', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
 
                         <button onClick={cerrarForm} style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', color: textMuted, fontSize: '22px', cursor: 'pointer' }}>✕</button>
 
@@ -235,7 +269,7 @@ export default function Admin() {
                         </h2>
 
                         {/* Campos básicos */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                        <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                             <Field label="Nombre *" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Ej: Bosque Sereno" />
                             <Field label="Precio (MXN) *" name="precio" value={form.precio} onChange={handleChange} placeholder="Ej: 1,200,000" />
                         </div>

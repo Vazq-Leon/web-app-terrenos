@@ -1,0 +1,53 @@
+.home-header {
+  padding: 60px 20px 20px 20px;
+  text-align: center;
+}
+
+.home-header h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 48px;
+  color: #222;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.home-header p {
+  color: #666;
+  font-size: 19px;
+  max-width: 650px;
+  margin: 15px auto 0 auto;
+  line-height: 1.6;
+}
+
+.terrain-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 📱 Mobile Adjustments */
+@media (max-width: 768px) {
+  .home-header {
+    padding: 40px 20px 10px 20px;
+  }
+
+  .home-header h1 {
+    font-size: 32px;
+    letter-spacing: -0.5px;
+  }
+
+  .home-header p {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .terrain-grid {
+    gap: 15px;
+    padding: 10px;
+  }
+}
