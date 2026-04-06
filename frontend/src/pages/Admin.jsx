@@ -174,7 +174,7 @@ export default function Admin() {
 
             {/* ── Content ── */}
             <div className="admin-container" style={{ padding: '16px 32px 40px' }}>
-                
+
                 {/* Desktop Table */}
                 <div className="desktop-table" style={{ backgroundColor: surface, borderRadius: '14px', border: `1px solid ${border}`, overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
