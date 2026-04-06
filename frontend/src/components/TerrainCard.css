@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap');
+
+.terrain-card {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  background: #fdfdfd;
+  border-radius: 30px;
+  box-shadow: 15px 10px 25px 0px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.terrain-card h2 {
+  text-transform: uppercase;
+  color: #054231;
+  text-align: center;
+  margin: 25px 0 0 0;
+  letter-spacing: 2px;
+  font-size: 30px;
+  font-family: 'Oswald', sans-serif;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.terrain-card img {
+  width: 85%;
+  height: 220px;
+  margin: 25px auto;
+  display: block;
+  border-radius: 15px;
+  box-shadow: 3px 15px 25px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+  object-fit: cover;
+}
+
+.terrain-card img:hover {
+  transform: scale(1.03);
+}
+
+.terrain-info {
+  padding: 30px;
+  background: white;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  margin-top: -10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.terrain-info p {
+  color: #454545;
+  margin: 5px 0 15px 0;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.terrain-info .price {
+  font-size: 24px;
+  color: #054231;
+  font-weight: 800;
+  margin-bottom: auto;
+  /* Empuja el botón al fondo si hay más espacio */
+}
+
+.more-info-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+  box-sizing: border-box;
+  color: #fff;
+  font-size: 18px;
+  padding: 12px 20px;
+  transition: 0.3s;
+  cursor: pointer;
+  border-radius: 25px;
+  border: none;
+  background: #000;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.more-info-btn:hover {
+  background: #333;
+}
