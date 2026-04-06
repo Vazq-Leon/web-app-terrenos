@@ -51,3 +51,22 @@
     padding: 10px;
   }
 }
+
+.empty-state {
+  width: 90%;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 60px 30px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  border: 1px solid #eef2f5;
+  text-align: center;
+}
+
+.empty-state p {
+  color: #888;
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0;
+}

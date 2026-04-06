@@ -32,8 +32,8 @@ export default function Home() {
         )}
         
         {!cargando && terrenos.length === 0 && !error && (
-          <div style={{ width: '100%', textAlign: 'center', padding: '60px 20px' }}>
-            <p style={{ color: '#888', fontSize: '18px' }}>No hay terrenos publicados aún. Ve al panel de control para agregar uno.</p>
+          <div className="empty-state">
+            <p>No hay terrenos publicados aún o no hemos podido cargar la información. Ve al panel de control para agregar uno.</p>
           </div>
         )}
 
