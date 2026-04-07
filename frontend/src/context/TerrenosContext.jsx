@@ -4,6 +4,15 @@ const API_URL = import.meta.env.VITE_API_URL || ''
 
 const TerrenosContext = createContext(null)
 
+// ── Helper: cabeceras con token JWT ──────────────────────────────────────────
+function authHeaders(extra = {}) {
+    const token = localStorage.getItem('admin_token')
+    return {
+        ...extra,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    }
+}
+
 export function TerrenosProvider({ children }) {
     const [terrenos, setTerrenos] = useState([])
     const [cargando, setCargando] = useState(true)
@@ -33,7 +42,7 @@ export function TerrenosProvider({ children }) {
     async function agregarTerreno(form) {
         const res = await fetch(`${API_URL}/api/terrenos`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: authHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify(form),
         })
         if (!res.ok) throw new Error('Error al crear terreno')
@@ -46,7 +55,7 @@ export function TerrenosProvider({ children }) {
     async function editarTerreno(id, cambios) {
         const res = await fetch(`${API_URL}/api/terrenos/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: authHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify(cambios),
         })
         if (!res.ok) throw new Error('Error al editar terreno')
@@ -59,6 +68,7 @@ export function TerrenosProvider({ children }) {
     async function eliminarTerreno(id) {
         const res = await fetch(`${API_URL}/api/terrenos/${id}`, {
             method: 'DELETE',
+            headers: authHeaders(),
         })
         if (!res.ok) throw new Error('Error al eliminar terreno')
         setTerrenos((prev) => prev.filter((t) => t.id !== id))
@@ -72,6 +82,7 @@ export function TerrenosProvider({ children }) {
 
         const res = await fetch(`${API_URL}/api/terrenos/${terrenoId}/media`, {
             method: 'POST',
+            headers: authHeaders(),
             body: formData,
         })
         if (!res.ok) throw new Error('Error al subir archivo')
@@ -95,6 +106,7 @@ export function TerrenosProvider({ children }) {
     async function eliminarMedia(mediaId, terrenoId, url, tipo) {
         const res = await fetch(`${API_URL}/api/media/${mediaId}`, {
             method: 'DELETE',
+            headers: authHeaders(),
         })
         if (!res.ok) throw new Error('Error al eliminar archivo')
 

@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTerrenos } from '../context/TerrenosContext'
 
 const formVacio = {
@@ -22,6 +23,7 @@ const danger = '#e05252'
 const success = '#3ecf8e'
 
 export default function Admin() {
+    const navigate = useNavigate()
     const { terrenos, agregarTerreno, editarTerreno, eliminarTerreno, subirMedia } = useTerrenos()
     const [showForm, setShowForm] = useState(false)
     const [editId, setEditId] = useState(null)
@@ -129,6 +131,11 @@ export default function Admin() {
         setConfirmarEliminar(null)
     }
 
+    const cerrarSesion = () => {
+        localStorage.removeItem('admin_token')
+        navigate('/admin/login')
+    }
+
     // ── Render ────────────────────────────────────────────────────────────────
     return (
         <div style={{ minHeight: '100vh', backgroundColor: bg, color: textMain, fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
@@ -158,9 +165,14 @@ export default function Admin() {
                     </h1>
                     <p style={{ margin: '2px 0 0', fontSize: '13px', color: textMuted }}>Administra los terrenos y su contenido multimedia</p>
                 </div>
-                <button onClick={abrirNuevo} style={btnStyle(accent, accentHover)}>
-                    + Agregar Terreno
-                </button>
+                <div style={{ display: 'flex', gap: 10 }}>
+                    <button onClick={abrirNuevo} style={btnStyle(accent, accentHover)}>
+                        + Agregar Terreno
+                    </button>
+                    <button onClick={cerrarSesion} style={btnStyle(danger, '#c44040')}>
+                        Cerrar sesión
+                    </button>
+                </div>
             </div>
 
             {/* ── Stats ── */}

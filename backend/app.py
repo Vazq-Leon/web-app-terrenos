@@ -2,13 +2,16 @@ import os
 import uuid
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
+from flask_jwt_extended import jwt_required
+from dotenv import load_dotenv
+from extensions import db, jwt
+
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 
-# ─── Base de datos ───────────────────────────────────────────────────────────
+# ─── Configuración ───────────────────────────────────────────────────────────
 database_url = os.environ.get('DATABASE_URL', '')
 # Render a veces da postgres:// en lugar de postgresql://
 if database_url.startswith('postgres://'):
@@ -16,6 +19,17 @@ if database_url.startswith('postgres://'):
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'cambia-esta-clave-en-produccion')
+
+# ─── Inicializar extensiones ──────────────────────────────────────────────────
+db.init_app(app)
+jwt.init_app(app)
+
+CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+# ─── Registro de blueprints ──────────────────────────────────────────────────
+from auth import auth_bp  # noqa: E402  (importar después de configurar app)
+app.register_blueprint(auth_bp)
 
 # ─── Uploads ─────────────────────────────────────────────────────────────────
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
@@ -25,8 +39,6 @@ app.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024  # 200 MB
 
 ALLOWED_IMAGES = {'jpg', 'jpeg', 'png', 'webp', 'gif'}
 ALLOWED_VIDEOS = {'mp4', 'mov', 'webm', 'avi', 'mkv'}
-
-db = SQLAlchemy(app)
 
 
 # ─── Modelos ──────────────────────────────────────────────────────────────────
@@ -104,6 +116,7 @@ def obtener_terreno(terreno_id):
 
 # POST /api/terrenos
 @app.route('/api/terrenos', methods=['POST'])
+@jwt_required()
 def crear_terreno():
     data = request.get_json()
     if not data or not data.get('nombre'):
@@ -123,6 +136,7 @@ def crear_terreno():
 
 # PUT /api/terrenos/<id>
 @app.route('/api/terrenos/<int:terreno_id>', methods=['PUT'])
+@jwt_required()
 def editar_terreno(terreno_id):
     t = Terreno.query.get_or_404(terreno_id)
     data = request.get_json()
@@ -139,6 +153,7 @@ def editar_terreno(terreno_id):
 
 # DELETE /api/terrenos/<id>
 @app.route('/api/terrenos/<int:terreno_id>', methods=['DELETE'])
+@jwt_required()
 def eliminar_terreno(terreno_id):
     t = Terreno.query.get_or_404(terreno_id)
     # Borrar archivos físicos
@@ -153,6 +168,7 @@ def eliminar_terreno(terreno_id):
 
 # POST /api/terrenos/<id>/media  — subir foto o video
 @app.route('/api/terrenos/<int:terreno_id>/media', methods=['POST'])
+@jwt_required()
 def subir_media(terreno_id):
     t = Terreno.query.get_or_404(terreno_id)
 
@@ -183,6 +199,7 @@ def subir_media(terreno_id):
 
 # DELETE /api/media/<media_id>
 @app.route('/api/media/<int:media_id>', methods=['DELETE'])
+@jwt_required()
 def eliminar_media(media_id):
     m = Media.query.get_or_404(media_id)
     ruta = os.path.join(app.config['UPLOAD_FOLDER'], m.filename)
@@ -195,7 +212,14 @@ def eliminar_media(media_id):
 
 # ─── Init ─────────────────────────────────────────────────────────────────────
 with app.app_context():
+    from auth import Admin  # noqa: E402
     db.create_all()
+
+    # Crear admin por defecto si no existe ninguno
+    if not Admin.query.first():
+        default_user = os.environ.get('ADMIN_USERNAME', 'admin')
+        default_pass = os.environ.get('ADMIN_PASSWORD', 'admin1234')
+        Admin.crear(default_user, default_pass)
 
 if __name__ == '__main__':
     app.run(debug=True)
