@@ -1,5 +1,6 @@
 import os
 import uuid
+import secrets
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -19,7 +20,19 @@ if database_url.startswith('postgres://'):
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'cambia-esta-clave-en-produccion')
+
+# La clave JWT debe estar en variables de entorno; en desarrollo se genera una aleatoria.
+_jwt_secret = os.environ.get('JWT_SECRET_KEY')
+if not _jwt_secret:
+    import warnings
+    _jwt_secret = secrets.token_hex(32)
+    warnings.warn(
+        "JWT_SECRET_KEY no está configurado. Se usará una clave aleatoria "
+        "temporal que cambiará al reiniciar la aplicación. "
+        "Configura JWT_SECRET_KEY en producción.",
+        stacklevel=2,
+    )
+app.config['JWT_SECRET_KEY'] = _jwt_secret
 
 # ─── Inicializar extensiones ──────────────────────────────────────────────────
 db.init_app(app)
@@ -218,7 +231,15 @@ with app.app_context():
     # Crear admin por defecto si no existe ninguno
     if not Admin.query.first():
         default_user = os.environ.get('ADMIN_USERNAME', 'admin')
-        default_pass = os.environ.get('ADMIN_PASSWORD', 'admin1234')
+        default_pass = os.environ.get('ADMIN_PASSWORD')
+        if not default_pass:
+            import warnings
+            default_pass = 'admin1234'
+            warnings.warn(
+                "ADMIN_PASSWORD no está configurado. Se usará 'admin1234' como "
+                "contraseña por defecto. Cambia esto en producción.",
+                stacklevel=2,
+            )
         Admin.crear(default_user, default_pass)
 
 if __name__ == '__main__':
